@@ -34,23 +34,44 @@ async function run() {
     await client.connect();
 
     const classesCollection = client.db("goldenPeaks").collection("allClass");
-    const instructorCollection = client.db("goldenPeaks").collection("instructors");
+    const instructorCollection = client
+      .db("goldenPeaks")
+      .collection("instructors");
+    const addedClassCollection = client
+      .db("goldenPeaks")
+      .collection("addedClass");
 
     app.get("/class", async (req, res) => {
-      const result = await classesCollection.find().sort({ number_of_students: -1 }).toArray();
+      const result = await classesCollection
+        .find()
+        .sort({ number_of_students: -1 })
+        .toArray();
       res.send(result);
     });
     app.get("/instructors", async (req, res) => {
-      const result = await instructorCollection.find().sort({ number_of_students: -1 }).toArray();
+      const result = await instructorCollection
+        .find()
+        .sort({ number_of_students: -1 })
+        .toArray();
       res.send(result);
     });
 
-    
-    
+    app.get("/selectedClass", async (req, res) => {
+      const email = req.query.email;
+      // if (!email) {
+      //   req.send([]);
+      // }
+      const query = { email: email };
+      const result = await addedClassCollection.find(query).toArray();
+      res.send(result);
+    });
 
 
-
-
+    app.post("/selectedClass", async (req, res) => {
+      const classes = req.body;
+      const result = await addedClassCollection.insertOne(classes);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
