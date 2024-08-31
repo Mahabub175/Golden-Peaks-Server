@@ -64,6 +64,8 @@ async function run() {
       .collection("addedClass");
     const usersCollection = client.db("goldenPeaks").collection("users");
     const paymentCollection = client.db("goldenPeaks").collection("payments");
+    const reviewsCollection = client.db("goldenPeaks").collection("reviews");
+    const blogsCollection = client.db("goldenPeaks").collection("blogs");
 
     // jwt api
 
@@ -329,6 +331,7 @@ async function run() {
       try {
         const data = req.body;
         const classId = data.classId;
+        console.log(classId);
         const result = await paymentCollection.insertOne(data);
 
         const filter = { _id: new ObjectId(classId) };
@@ -361,6 +364,20 @@ async function run() {
         .find({ email: email })
         .sort({ date: -1 })
         .toArray();
+      res.send(result);
+    });
+
+    // reviews api
+
+    app.get("/reviews", async (req, res) => {
+      const result = await reviewsCollection.find().toArray();
+      res.send(result);
+    });
+
+    // blogs api
+
+    app.get("/blogs", async (req, res) => {
+      const result = await blogsCollection.find().toArray();
       res.send(result);
     });
 
